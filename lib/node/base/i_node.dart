@@ -1,5 +1,5 @@
 /// Base class for Node that defines the required interfaces
-abstract class INode {
+abstract class INode<T> {
   static const pathSeparator = ".";
   static const rootKey = "/";
 
@@ -7,7 +7,7 @@ abstract class INode {
   String get key;
 
   /// This is the parent [INode]. Only the root node has a null [parent]
-  covariant INode? parent;
+  covariant INode<T>? parent;
 
   /// These are the children of the node. It is a collection that can be
   /// any appropriate data-structure like [List] or [Map]
@@ -17,11 +17,10 @@ abstract class INode {
   /// Since [children] can be implemented using any suitable data-structure,
   /// therefore by having an iterable list as children ensures that the children
   /// can always be iterated when required.
-  List<INode> get childrenAsList;
+  List<INode<T>> get childrenAsList;
 
-  /// Any related data that needs to be accessible from the node can be added to
-  /// [meta] without needing to extend or implement the [INode]
-  Map<String, dynamic>? meta;
+  /// The data contained in the node
+  T? get data;
 
   /// * Utility method to get a child node at the [path].
   /// Get any item at [path] from the [root]
@@ -55,10 +54,10 @@ abstract class INode {
   ///   0C.0C1C
   ///
   /// Note: The root node [rootKey] does not need to be in the path
-  INode elementAt(String path);
+  INode<T> elementAt(String path);
 
   /// Overloaded operator for [elementAt]
-  INode operator [](String path);
+  INode<T> operator [](String path);
 
   /// Getter to check if the node is a root.
   /// Root is always the first node in a Tree. A Root-Node never has a parent.
@@ -75,7 +74,7 @@ abstract class INode {
   /// Getter to get the [root] node.
   /// If the current node is not a [root], then the getter will traverse up the
   /// path to get the [root].
-  INode get root => isRoot ? this : parent!.root;
+  INode<T> get root => isRoot ? this : parent!.root;
 
   /// Getter to get the level i.e. how many iterations it will take to get to the
   /// [root].

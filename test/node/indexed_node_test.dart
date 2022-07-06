@@ -371,4 +371,11 @@ void main() {
           throwsA(isA<ChildrenNotFoundException>()));
     });
   });
+
+  group('test node data is correctly saved and retrieved', () {
+    test('Node with string data is created and retrieved', () {
+      final node = IndexedNode<String>(data: "some node");
+      expect(node.data, "some node");
+    });
+  });
 }

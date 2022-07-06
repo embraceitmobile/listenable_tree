@@ -167,4 +167,11 @@ void main() {
       expect(() => node["0A${_s}0C1A"], throwsA(isA<NodeNotFoundException>()));
     });
   });
+
+  group('test node data is correctly saved and retrieved', () {
+    test('Node with string data is created and retrieved', () {
+      final node = Node<String>(data: "some node");
+      expect(node.data, "some node");
+    });
+  });
 }

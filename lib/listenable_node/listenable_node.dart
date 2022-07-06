@@ -10,7 +10,7 @@ import 'base/i_listenable_node.dart';
 
 class ListenableNode extends Node
     with ChangeNotifier
-    implements IListenableNode {
+    implements IListenableNode, ValueListenable<Node> {
   /// A listenable implementation the [Node].
   /// The mutations to the [Node] can be listened to using the [ValueListenable]
   /// interface or the [addedNodes] and [removedNodes] streams.
