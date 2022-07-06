@@ -8,9 +8,9 @@ import 'package:listenable_tree/node/node.dart';
 
 import 'base/i_listenable_node.dart';
 
-class ListenableNode extends Node
+class ListenableNode<T> extends Node<T>
     with ChangeNotifier
-    implements IListenableNode, ValueListenable<Node> {
+    implements IListenableNode<T> {
   /// A listenable implementation the [Node].
   /// The mutations to the [Node] can be listened to using the [ValueListenable]
   /// interface or the [addedNodes] and [removedNodes] streams.
@@ -24,9 +24,10 @@ class ListenableNode extends Node
   /// assigned to the [Node].
   ListenableNode({
     String? key,
-    Node? parent,
-    Map<String, ListenableNode>? children,
-  }) : super(key: key, parent: parent, children: children);
+    T? data,
+    Node<T>? parent,
+    Map<String, ListenableNode<T>>? children,
+  }) : super(key: key, data: data, parent: parent, children: children);
 
   /// Alternate factory constructor for [ListenableNode] that should be used for
   /// the [root] nodes.
@@ -34,22 +35,17 @@ class ListenableNode extends Node
 
   /// This is the parent [ListenableNode]. Only the root node has a null [parent]
   @override
-  ListenableNode? parent;
+  ListenableNode<T>? parent;
 
   /// Getter to get the [value] of the [ValueListenable]. It returns the [root]
   @override
-  ListenableNode get value => this;
+  Node<T> get value => this;
 
   /// Getter to get the [root] node.
   /// If the current node is not a [root], then the getter will traverse up the
   /// path to get the [root].
   @override
-  ListenableNode get root => super.root as ListenableNode;
-
-  /// This returns the [children] as an iterable list.
-  @override
-  List<ListenableNode> get childrenAsList =>
-      List<ListenableNode>.from(super.childrenAsList);
+  ListenableNode<T> get root => super.root as ListenableNode<T>;
 
   final EventStreamController<NodeAddEvent> _addedNodes =
       EventStreamController();
@@ -93,7 +89,7 @@ class ListenableNode extends Node
   /// The [ValueListenable] and [addedNodes] listeners will also be notified
   /// on this operation
   @override
-  void add(Node value) {
+  void add(Node<T> value) {
     super.add(value);
     _notifyListeners();
     _notifyNodesAdded(NodeAddEvent(List.from([value])));
@@ -104,7 +100,7 @@ class ListenableNode extends Node
   /// The [ValueListenable] and [addedNodes] listeners will also be notified
   /// on this operation
   @override
-  void addAll(Iterable<Node> iterable) {
+  void addAll(Iterable<Node<T>> iterable) {
     super.addAll(iterable);
     _notifyListeners();
     _notifyNodesAdded(NodeAddEvent(List.from(iterable)));
@@ -115,7 +111,7 @@ class ListenableNode extends Node
   /// The [ValueListenable] and [removedNodes] listeners will also be notified
   /// on this operation
   @override
-  void remove(Node value) {
+  void remove(Node<T> value) {
     super.remove(value);
     _notifyListeners();
     _notifyNodesRemoved(NodeRemoveEvent(List.from([value])));
@@ -138,7 +134,7 @@ class ListenableNode extends Node
   /// The [ValueListenable] and [removedNodes] listeners will also be notified
   /// on this operation
   @override
-  void removeAll(Iterable<Node> iterable) {
+  void removeAll(Iterable<Node<T>> iterable) {
     super.removeAll(iterable);
     _notifyListeners();
     _notifyNodesRemoved(NodeRemoveEvent(List.from(iterable)));
@@ -150,7 +146,7 @@ class ListenableNode extends Node
   /// The [ValueListenable] and [removedNodes] listeners will also be notified
   /// on this operation
   @override
-  void removeWhere(bool Function(Node element) test) {
+  void removeWhere(bool Function(Node<T> element) test) {
     final allChildren = childrenAsList.toSet();
     super.removeWhere(test);
     _notifyListeners();
@@ -208,12 +204,12 @@ class ListenableNode extends Node
   ///
   /// Note: The root node [rootKey] does not need to be in the path
   @override
-  ListenableNode elementAt(String path) =>
-      super.elementAt(path) as ListenableNode;
+  ListenableNode<T> elementAt(String path) =>
+      super.elementAt(path) as ListenableNode<T>;
 
   /// Overloaded operator for [elementAt]
   @override
-  ListenableNode operator [](String path) => elementAt(path);
+  ListenableNode<T> operator [](String path) => elementAt(path);
 
   /// Disposer to clear the listeners and [StreamSubscription]s
   @override

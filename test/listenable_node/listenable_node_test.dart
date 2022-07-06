@@ -467,4 +467,23 @@ void main() {
       expect(() => node["0A${_s}0C1A"], throwsA(isA<NodeNotFoundException>()));
     });
   });
+
+  group('node data is correctly saved and retrieved', () {
+    test('Node with string data is created and retrieved', () {
+      final node = ListenableNode<String>(data: "some node");
+      expect(node.data, "some node");
+    });
+
+    test('Correct data is emitted by value notifier on add a node', () async {
+      final completer = Completer<bool>();
+      final node = ListenableNode<String>.root();
+
+      node.addListener(() {
+        completer.complete(true);
+      });
+      node.add(Node<String>(data: "new data"));
+      await completer.future;
+      expect(node.childrenAsList.first.data, "new data");
+    });
+  });
 }

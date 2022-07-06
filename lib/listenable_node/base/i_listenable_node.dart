@@ -7,8 +7,8 @@ import 'package:listenable_tree/node/base/i_node.dart';
 /// The [IListenableNode] also implements the [ValueListenable], so it can be
 /// used with a [ValueListenableBuilder] for updating the UI whenever the node
 /// is mutated.
-abstract class IListenableNode extends INode
-    implements NodeUpdateNotifier {}
+abstract class IListenableNode<T> extends INode<T>
+    implements NodeUpdateNotifier,  ValueListenable<INode<T>> {}
 
 /// This class provides more granular over which updates to listen to.
 abstract class NodeUpdateNotifier {
