@@ -22,8 +22,11 @@ class ListenableNode<T> extends Node<T>
   /// Make sure that the provided [key] is unique to among the siblings of the node.
   /// If a [key] is not provided, then a [UniqueKey] will automatically be
   /// assigned to the [Node].
-  ListenableNode({String? key, Node<T>? parent})
-      : super(key: key, parent: parent);
+  ListenableNode({
+    String? key,
+    Node<T>? parent,
+    Map<String, ListenableNode<T>>? children,
+  }) : super(key: key, parent: parent, children: children);
 
   /// Alternate factory constructor for [ListenableNode] that should be used for
   /// the [root] nodes.

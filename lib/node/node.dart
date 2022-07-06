@@ -29,8 +29,8 @@ class Node<T> extends INode<T> implements INodeActions<T> {
   /// If a [key] is not provided, then a [UniqueKey] will automatically be
   /// assigned to the [Node].
   @mustCallSuper
-  Node({String? key, this.parent})
-      : children = <String, Node<T>>{},
+  Node({String? key, this.parent, Map<String, Node<T>>? children})
+      : children = children ?? <String, Node<T>>{},
         key = key ?? UniqueKey().toString();
 
   /// Alternate factory constructor that should be used for the [root] nodes.

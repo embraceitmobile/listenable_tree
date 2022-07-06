@@ -31,8 +31,8 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
   /// If a [key] is not provided, then a [UniqueKey] will automatically be
   /// assigned to the [Node].
   @mustCallSuper
-  IndexedNode({String? key, this.parent})
-      : children = <IndexedNode<T>>[],
+  IndexedNode({String? key, this.parent, List<IndexedNode<T>>? children})
+      : children = children ?? <IndexedNode<T>>[],
         key = key ?? UniqueKey().toString();
 
   /// Alternate factory constructor that should be used for the [root] nodes.

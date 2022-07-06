@@ -20,8 +20,11 @@ class ListenableIndexedNode<T> extends IndexedNode<T>
   /// Make sure that the provided [key] is unique to among the siblings of the node.
   /// If a [key] is not provided, then a [UniqueKey] will automatically be
   /// assigned to the [Node].
-  ListenableIndexedNode({String? key, IndexedNode<T>? parent})
-      : super(key: key, parent: parent);
+  ListenableIndexedNode({
+    String? key,
+    IndexedNode<T>? parent,
+    List<ListenableIndexedNode<T>>? children,
+  }) : super(key: key, parent: parent, children: children);
 
   /// Alternate factory constructor for [ListenableIndexedNode] that should be used for
   /// the [root] nodes.
