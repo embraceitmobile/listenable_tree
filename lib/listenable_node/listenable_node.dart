@@ -27,11 +27,14 @@ class ListenableNode<T> extends Node<T>
     T? data,
     Node<T>? parent,
     Map<String, ListenableNode<T>>? children,
+    this.bubbleUpEvents = true,
   }) : super(key: key, data: data, parent: parent, children: children);
 
   /// Alternate factory constructor for [ListenableNode] that should be used for
   /// the [root] nodes.
   factory ListenableNode.root() => ListenableNode(key: INode.rootKey);
+
+  final bool bubbleUpEvents;
 
   /// This is the parent [ListenableNode]. Only the root node has a null [parent]
   @override
@@ -221,7 +224,7 @@ class ListenableNode<T> extends Node<T>
 
   void _notifyListeners() {
     notifyListeners();
-    if (!isRoot) parent!._notifyListeners();
+    if (bubbleUpEvents && !isRoot) parent!._notifyListeners();
   }
 
   void _notifyNodesAdded(NodeAddEvent event) {

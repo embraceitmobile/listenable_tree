@@ -25,12 +25,15 @@ class ListenableIndexedNode<T> extends IndexedNode<T>
     T? data,
     IndexedNode<T>? parent,
     List<ListenableIndexedNode<T>>? children,
+    this.bubbleUpEvents = true,
   }) : super(key: key, data: data, parent: parent, children: children);
 
   /// Alternate factory constructor for [ListenableIndexedNode] that should be used for
   /// the [root] nodes.
   factory ListenableIndexedNode.root() =>
       ListenableIndexedNode(key: INode.rootKey);
+
+  final bool bubbleUpEvents;
 
   /// This is the parent [ListenableNode]. Only the root node has a null [parent]
   @override
@@ -339,7 +342,7 @@ class ListenableIndexedNode<T> extends IndexedNode<T>
 
   void _notifyListeners() {
     notifyListeners();
-    if (!isRoot) parent!._notifyListeners();
+    if (bubbleUpEvents && !isRoot) parent!._notifyListeners();
   }
 
   void _notifyNodesAdded(NodeAddEvent event) {
