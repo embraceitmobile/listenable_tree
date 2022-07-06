@@ -4,10 +4,10 @@ import 'package:listenable_tree/helpers/exceptions.dart';
 import 'base/i_node.dart';
 import 'base/i_node_actions.dart';
 
-class Node<T> extends INode<T> implements INodeActions<T> {
+class Node extends INode implements INodeActions {
   /// These are the children of the node.
   @override
-  final Map<String, Node<T>> children;
+  final Map<String, Node> children;
 
   /// This is the uniqueKey of the [Node]
   @override
@@ -15,7 +15,7 @@ class Node<T> extends INode<T> implements INodeActions<T> {
 
   /// This is the parent [Node]. Only the root node has a null [parent]
   @override
-  Node<T>? parent;
+  Node? parent;
 
   /// Any related data that needs to be accessible from the node can be added to
   /// [meta] without needing to extend or implement the [INode]
@@ -29,8 +29,8 @@ class Node<T> extends INode<T> implements INodeActions<T> {
   /// If a [key] is not provided, then a [UniqueKey] will automatically be
   /// assigned to the [Node].
   @mustCallSuper
-  Node({String? key, this.parent, Map<String, Node<T>>? children})
-      : children = children ?? <String, Node<T>>{},
+  Node({String? key, this.parent, Map<String, Node>? children})
+      : children = children ?? <String, Node>{},
         key = key ?? UniqueKey().toString();
 
   /// Alternate factory constructor that should be used for the [root] nodes.
@@ -40,15 +40,15 @@ class Node<T> extends INode<T> implements INodeActions<T> {
   /// If the current node is not a [root], then the getter will traverse up the
   /// path to get the [root].
   @override
-  Node<T> get root => super.root as Node<T>;
+  Node get root => super.root as Node;
 
   /// This returns the [children] as an iterable list.
   @override
-  List<Node<T>> get childrenAsList => children.values.toList(growable: false);
+  List<Node> get childrenAsList => children.values.toList(growable: false);
 
   /// Add a [value] node to the [children]
   @override
-  void add(Node<T> value) {
+  void add(Node value) {
     if (children.containsKey(value.key)) throw DuplicateKeyException(value.key);
     value.parent = this;
     children[value.key] = value;
@@ -56,7 +56,7 @@ class Node<T> extends INode<T> implements INodeActions<T> {
 
   /// Add a collection of [Iterable] nodes to [children]
   @override
-  void addAll(Iterable<Node<T>> iterable) {
+  void addAll(Iterable<Node> iterable) {
     for (final node in iterable) {
       if (children.containsKey(node.key)) throw DuplicateKeyException(node.key);
       node.parent = this;
@@ -73,7 +73,7 @@ class Node<T> extends INode<T> implements INodeActions<T> {
 
   /// Remove a child [value] node from the [children]
   @override
-  void remove(Node<T> value) {
+  void remove(Node value) {
     children.remove(value.key);
   }
 
@@ -81,12 +81,12 @@ class Node<T> extends INode<T> implements INodeActions<T> {
   @override
   void delete() {
     if (isRoot) throw ActionNotAllowedException.deleteRoot(this);
-    (parent as Node<T>).remove(this);
+    (parent as Node).remove(this);
   }
 
   /// Remove all the [Iterable] nodes from the [children]
   @override
-  void removeAll(Iterable<Node<T>> iterable) {
+  void removeAll(Iterable<Node> iterable) {
     for (final node in iterable) {
       children.remove(node.key);
     }
@@ -95,13 +95,13 @@ class Node<T> extends INode<T> implements INodeActions<T> {
   /// Remove all the child nodes from the [children] that match the criterion in
   /// the provided [test]
   @override
-  void removeWhere(bool Function(Node<T> element) test) {
+  void removeWhere(bool Function(Node element) test) {
     children.removeWhere((key, value) => test(value));
   }
 
   /// Overloaded operator for [elementAt]
   @override
-  Node<T> operator [](String path) => elementAt(path);
+  Node operator [](String path) => elementAt(path);
 
   /// * Utility method to get a child node at the [path].
   /// Get any item at [path] from the [root]
@@ -136,8 +136,8 @@ class Node<T> extends INode<T> implements INodeActions<T> {
   ///
   /// Note: The root node [rootKey] does not need to be in the path
   @override
-  Node<T> elementAt(String path) {
-    Node<T> currentNode = this;
+  Node elementAt(String path) {
+    Node currentNode = this;
     for (final nodeKey in path.splitToNodes) {
       if (nodeKey == currentNode.key) {
         continue;

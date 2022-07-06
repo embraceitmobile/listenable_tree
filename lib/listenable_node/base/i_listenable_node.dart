@@ -7,33 +7,33 @@ import 'package:listenable_tree/node/base/i_node.dart';
 /// The [IListenableNode] also implements the [ValueListenable], so it can be
 /// used with a [ValueListenableBuilder] for updating the UI whenever the node
 /// is mutated.
-abstract class IListenableNode<T> extends INode<T>
-    implements NodeUpdateNotifier<T>, ValueListenable<T> {}
+abstract class IListenableNode extends INode
+    implements NodeUpdateNotifier, ValueListenable<INode> {}
 
 /// This class provides more granular over which updates to listen to.
-abstract class NodeUpdateNotifier<T> {
+abstract class NodeUpdateNotifier {
   /// Listen to this [Stream] to get updates on when a Node or a collection of
   /// Nodes is added to the current node.
   /// It returns a stream of [NodeAddEvent]
-  Stream<NodeAddEvent<T>> get addedNodes;
+  Stream<NodeAddEvent> get addedNodes;
 
   /// Listen to this [Stream] to get updates on when a Node or a collection of
   /// Nodes is inserted in the current node.
   /// It returns a stream of [insertedNodes]
-  Stream<NodeInsertEvent<T>> get insertedNodes;
+  Stream<NodeInsertEvent> get insertedNodes;
 
   /// Listen to this [Stream] to get updates on when a Node or a collection of
   /// Nodes is removed from the current node.
   /// It returns a stream of [NodeRemoveEvent]
-  Stream<NodeRemoveEvent<T>> get removedNodes;
+  Stream<NodeRemoveEvent> get removedNodes;
 
   void dispose();
 }
 
-mixin NodeEvent<T> {}
+mixin NodeEvent {}
 
-class NodeAddEvent<T> with NodeEvent<T> {
-  final List<T> items;
+class NodeAddEvent with NodeEvent {
+  final List items;
 
   const NodeAddEvent(this.items);
 
@@ -43,8 +43,8 @@ class NodeAddEvent<T> with NodeEvent<T> {
   }
 }
 
-class NodeRemoveEvent<T> with NodeEvent<T> {
-  final List<T> items;
+class NodeRemoveEvent with NodeEvent {
+  final List items;
 
   const NodeRemoveEvent(this.items);
 
@@ -54,8 +54,8 @@ class NodeRemoveEvent<T> with NodeEvent<T> {
   }
 }
 
-class NodeInsertEvent<T> with NodeEvent<T> {
-  final List<T> items;
+class NodeInsertEvent with NodeEvent {
+  final List items;
   final int index;
 
   const NodeInsertEvent(this.items, this.index);

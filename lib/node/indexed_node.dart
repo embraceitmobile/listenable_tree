@@ -5,10 +5,10 @@ import 'package:listenable_tree/helpers/exceptions.dart';
 import 'base/i_node.dart';
 import 'base/i_node_actions.dart';
 
-class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
+class IndexedNode extends INode implements IIndexedNodeActions {
   /// These are the children of the node.
   @override
-  final List<IndexedNode<T>> children;
+  final List<IndexedNode> children;
 
   /// This is the uniqueKey of the [Node]
   @override
@@ -16,7 +16,7 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
 
   /// This is the parent [Node]. Only the root node has a null [parent]
   @override
-  IndexedNode<T>? parent;
+  IndexedNode? parent;
 
   /// Any related data that needs to be accessible from the node can be added to
   /// [meta] without needing to extend or implement the [INode]
@@ -31,8 +31,8 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
   /// If a [key] is not provided, then a [UniqueKey] will automatically be
   /// assigned to the [Node].
   @mustCallSuper
-  IndexedNode({String? key, this.parent, List<IndexedNode<T>>? children})
-      : children = children ?? <IndexedNode<T>>[],
+  IndexedNode({String? key, this.parent, List<IndexedNode>? children})
+      : children = children ?? <IndexedNode>[],
         key = key ?? UniqueKey().toString();
 
   /// Alternate factory constructor that should be used for the [root] nodes.
@@ -42,36 +42,36 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
   /// If the current node is not a [root], then the getter will traverse up the
   /// path to get the [root].
   @override
-  IndexedNode<T> get root => super.root as IndexedNode<T>;
+  IndexedNode get root => super.root as IndexedNode;
 
   /// This returns the [children] as an iterable list.
   @override
-  List<IndexedNode<T>> get childrenAsList => UnmodifiableListView(children);
+  List<IndexedNode> get childrenAsList => UnmodifiableListView(children);
 
   /// Get the [first] child in the list
   @override
-  IndexedNode<T> get first {
+  IndexedNode get first {
     if (children.isEmpty) throw ChildrenNotFoundException(this);
     return children.first;
   }
 
   /// Set the [first] child in the list to [value]
   @override
-  set first(IndexedNode<T> value) {
+  set first(IndexedNode value) {
     if (children.isEmpty) throw ChildrenNotFoundException(this);
     children.first = value;
   }
 
   /// Get the [last] child in the list
   @override
-  IndexedNode<T> get last {
+  IndexedNode get last {
     if (children.isEmpty) throw ChildrenNotFoundException(this);
     return children.last;
   }
 
   /// Set the [last] child in the list to [value]
   @override
-  set last(IndexedNode<T> value) {
+  set last(IndexedNode value) {
     if (children.isEmpty) throw ChildrenNotFoundException(this);
     children.last = value;
   }
@@ -80,8 +80,8 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
   /// An optional [orElse] function can be provided to handle the [test] is not
   /// able to find any node that matches the provided criterion.
   @override
-  IndexedNode<T> firstWhere(bool Function(IndexedNode<T> element) test,
-      {IndexedNode<T> Function()? orElse}) {
+  IndexedNode firstWhere(bool Function(IndexedNode element) test,
+      {IndexedNode Function()? orElse}) {
     return children.firstWhere(test, orElse: orElse);
   }
 
@@ -90,7 +90,7 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
   /// An optional [start] index can be provided to ignore any nodes before the
   /// index [start]
   @override
-  int indexWhere(bool Function(IndexedNode<T> element) test, [int start = 0]) {
+  int indexWhere(bool Function(IndexedNode element) test, [int start = 0]) {
     return children.indexWhere(test, start);
   }
 
@@ -98,15 +98,15 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
   /// An optional [orElse] function can be provided to handle the [test] is not
   /// able to find any node that matches the provided criterion.
   @override
-  IndexedNode<T> lastWhere(bool Function(IndexedNode<T> element) test,
-      {IndexedNode<T> Function()? orElse}) {
+  IndexedNode lastWhere(bool Function(IndexedNode element) test,
+      {IndexedNode Function()? orElse}) {
     return children.lastWhere(test, orElse: orElse);
   }
 
   /// Add a child [value] node to the [children]. The [value] will be inserted
   /// after the last child in the list
   @override
-  void add(IndexedNode<T> value) {
+  void add(IndexedNode value) {
     value.parent = this;
     children.add(value);
   }
@@ -114,7 +114,7 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
   /// Add a collection of [Iterable] nodes to [children]. The [iterable] will be
   /// inserted after the last child in the list
   @override
-  void addAll(Iterable<IndexedNode<T>> iterable) {
+  void addAll(Iterable<IndexedNode> iterable) {
     for (final node in iterable) {
       node.parent = this;
     }
@@ -123,14 +123,14 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
 
   /// Insert an [element] in the children list at [index]
   @override
-  void insert(int index, IndexedNode<T> element) {
+  void insert(int index, IndexedNode element) {
     element.parent = this;
     children.insert(index, element);
   }
 
   /// Insert an [element] in the children list after the node [after]
   @override
-  int insertAfter(IndexedNode<T> after, IndexedNode<T> element) {
+  int insertAfter(IndexedNode after, IndexedNode element) {
     final index = children.indexWhere((node) => node.key == after.key);
     if (index < 0) throw NodeNotFoundException.fromNode(after);
     insert(index + 1, element);
@@ -139,7 +139,7 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
 
   /// Insert an [element] in the children list before the node [before]
   @override
-  int insertBefore(IndexedNode<T> before, IndexedNode<T> element) {
+  int insertBefore(IndexedNode before, IndexedNode element) {
     final index = children.indexWhere((node) => node.key == before.key);
     if (index < 0) throw NodeNotFoundException.fromNode(before);
     insert(index, element);
@@ -148,7 +148,7 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
 
   /// Insert a collection of [Iterable] nodes in the children list at [index]
   @override
-  void insertAll(int index, Iterable<IndexedNode<T>> iterable) {
+  void insertAll(int index, Iterable<IndexedNode> iterable) {
     for (final node in iterable) {
       node.parent = this;
     }
@@ -167,7 +167,7 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
 
   /// Remove a child [value] node from the [children]
   @override
-  void remove(IndexedNode<T> value) {
+  void remove(IndexedNode value) {
     final index = children.indexWhere((node) => node.key == value.key);
     if (index < 0) throw NodeNotFoundException(key: key);
     children.removeAt(index);
@@ -175,13 +175,13 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
 
   /// Remove the child node at the [index]
   @override
-  IndexedNode<T> removeAt(int index) {
+  IndexedNode removeAt(int index) {
     return children.removeAt(index);
   }
 
   /// Remove all the [Iterable] nodes from the [children]
   @override
-  void removeAll(Iterable<IndexedNode<T>> iterable) {
+  void removeAll(Iterable<IndexedNode> iterable) {
     for (final node in iterable) {
       remove(node);
     }
@@ -190,7 +190,7 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
   /// Remove all the child nodes from the [children] that match the criterion
   /// in the given [test]
   @override
-  void removeWhere(bool Function(IndexedNode<T> element) test) {
+  void removeWhere(bool Function(IndexedNode element) test) {
     children.removeWhere(test);
   }
 
@@ -234,8 +234,8 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
   ///
   /// Note: The root node [rootKey] does not need to be in the path
   @override
-  IndexedNode<T> elementAt(String path) {
-    IndexedNode<T> currentNode = this;
+  IndexedNode elementAt(String path) {
+    IndexedNode currentNode = this;
     for (final nodeKey in path.splitToNodes) {
       if (nodeKey == currentNode.key) {
         continue;
@@ -254,11 +254,11 @@ class IndexedNode<T> extends INode<T> implements IIndexedNodeActions<T> {
 
   /// Returns the child node at the [index]
   @override
-  IndexedNode<T> at(int index) => children[index];
+  IndexedNode at(int index) => children[index];
 
   /// Overloaded operator for [elementAt]
   @override
-  IndexedNode<T> operator [](String path) => elementAt(path);
+  IndexedNode operator [](String path) => elementAt(path);
 
   @override
   String toString() =>

@@ -8,9 +8,9 @@ import 'package:listenable_tree/node/node.dart';
 
 import 'base/i_listenable_node.dart';
 
-class ListenableNode<T> extends Node<T>
+class ListenableNode extends Node
     with ChangeNotifier
-    implements IListenableNode<T> {
+    implements IListenableNode {
   /// A listenable implementation the [Node].
   /// The mutations to the [Node] can be listened to using the [ValueListenable]
   /// interface or the [addedNodes] and [removedNodes] streams.
@@ -24,8 +24,8 @@ class ListenableNode<T> extends Node<T>
   /// assigned to the [Node].
   ListenableNode({
     String? key,
-    Node<T>? parent,
-    Map<String, ListenableNode<T>>? children,
+    Node? parent,
+    Map<String, ListenableNode>? children,
   }) : super(key: key, parent: parent, children: children);
 
   /// Alternate factory constructor for [ListenableNode] that should be used for
@@ -34,27 +34,27 @@ class ListenableNode<T> extends Node<T>
 
   /// This is the parent [ListenableNode]. Only the root node has a null [parent]
   @override
-  ListenableNode<T>? parent;
+  ListenableNode? parent;
 
   /// Getter to get the [value] of the [ValueListenable]. It returns the [root]
   @override
-  T get value => this as T;
+  ListenableNode get value => this;
 
   /// Getter to get the [root] node.
   /// If the current node is not a [root], then the getter will traverse up the
   /// path to get the [root].
   @override
-  ListenableNode<T> get root => super.root as ListenableNode<T>;
+  ListenableNode get root => super.root as ListenableNode;
 
   /// This returns the [children] as an iterable list.
   @override
-  List<ListenableNode<T>> get childrenAsList =>
-      List<ListenableNode<T>>.from(super.childrenAsList);
+  List<ListenableNode> get childrenAsList =>
+      List<ListenableNode>.from(super.childrenAsList);
 
-  final EventStreamController<NodeAddEvent<T>> _addedNodes =
+  final EventStreamController<NodeAddEvent> _addedNodes =
       EventStreamController();
 
-  final EventStreamController<NodeRemoveEvent<T>> _removedNodes =
+  final EventStreamController<NodeRemoveEvent> _removedNodes =
       EventStreamController();
 
   /// Listen to this [Stream] to get updates on when a Node or a collection of
@@ -63,7 +63,7 @@ class ListenableNode<T> extends Node<T>
   /// The stream should only be listened to on the [root] node.
   /// [ActionNotAllowedException] if a non-root tries to listen the [addedNodes]
   @override
-  Stream<NodeAddEvent<T>> get addedNodes {
+  Stream<NodeAddEvent> get addedNodes {
     if (!isRoot) throw ActionNotAllowedException.listener(this);
     return _addedNodes.stream;
   }
@@ -74,7 +74,7 @@ class ListenableNode<T> extends Node<T>
   /// The stream should only be listened to on the [root] node.
   /// [ActionNotAllowedException] if a non-root tries to listen the [removedNodes]
   @override
-  Stream<NodeRemoveEvent<T>> get removedNodes {
+  Stream<NodeRemoveEvent> get removedNodes {
     if (!isRoot) throw ActionNotAllowedException.listener(this);
     return _removedNodes.stream;
   }
@@ -82,22 +82,21 @@ class ListenableNode<T> extends Node<T>
   /// The insertNodes stream is not allowed for the ListenableNode.
   /// The index based operations like 'insert' are not implemented in ListenableNode
   @override
-  Stream<NodeInsertEvent<T>> get insertedNodes =>
-      throw ActionNotAllowedException(
-          this,
-          "The insertNodes stream is not allowed"
-          "for the ListenableNode. The index based operations like 'insert' are "
-          "not implemented in ListenableNode");
+  Stream<NodeInsertEvent> get insertedNodes => throw ActionNotAllowedException(
+      this,
+      "The insertNodes stream is not allowed"
+      "for the ListenableNode. The index based operations like 'insert' are "
+      "not implemented in ListenableNode");
 
   /// Add a [value] node to the [children]
   ///
   /// The [ValueListenable] and [addedNodes] listeners will also be notified
   /// on this operation
   @override
-  void add(Node<T> value) {
+  void add(Node value) {
     super.add(value);
     _notifyListeners();
-    _notifyNodesAdded(NodeAddEvent(List<T>.from([value])));
+    _notifyNodesAdded(NodeAddEvent(List.from([value])));
   }
 
   /// Add a collection of [Iterable] nodes to [this] node
@@ -105,10 +104,10 @@ class ListenableNode<T> extends Node<T>
   /// The [ValueListenable] and [addedNodes] listeners will also be notified
   /// on this operation
   @override
-  void addAll(Iterable<Node<T>> iterable) {
+  void addAll(Iterable<Node> iterable) {
     super.addAll(iterable);
     _notifyListeners();
-    _notifyNodesAdded(NodeAddEvent(List<T>.from(iterable)));
+    _notifyNodesAdded(NodeAddEvent(List.from(iterable)));
   }
 
   /// Remove a child [value] node from the [children]
@@ -116,10 +115,10 @@ class ListenableNode<T> extends Node<T>
   /// The [ValueListenable] and [removedNodes] listeners will also be notified
   /// on this operation
   @override
-  void remove(Node<T> value) {
+  void remove(Node value) {
     super.remove(value);
     _notifyListeners();
-    _notifyNodesRemoved(NodeRemoveEvent(List<T>.from([value])));
+    _notifyNodesRemoved(NodeRemoveEvent(List.from([value])));
   }
 
   /// Delete [this] node
@@ -131,7 +130,7 @@ class ListenableNode<T> extends Node<T>
     final nodeToRemove = this;
     super.delete();
     _notifyListeners();
-    _notifyNodesRemoved(NodeRemoveEvent(List<T>.from([nodeToRemove])));
+    _notifyNodesRemoved(NodeRemoveEvent(List.from([nodeToRemove])));
   }
 
   /// Remove all the [Iterable] nodes from the [children]
@@ -139,10 +138,10 @@ class ListenableNode<T> extends Node<T>
   /// The [ValueListenable] and [removedNodes] listeners will also be notified
   /// on this operation
   @override
-  void removeAll(Iterable<Node<T>> iterable) {
+  void removeAll(Iterable<Node> iterable) {
     super.removeAll(iterable);
     _notifyListeners();
-    _notifyNodesRemoved(NodeRemoveEvent(List<T>.from(iterable)));
+    _notifyNodesRemoved(NodeRemoveEvent(List.from(iterable)));
   }
 
   /// Remove all the child nodes from the [children] that match the criterion in
@@ -151,7 +150,7 @@ class ListenableNode<T> extends Node<T>
   /// The [ValueListenable] and [removedNodes] listeners will also be notified
   /// on this operation
   @override
-  void removeWhere(bool Function(Node<T> element) test) {
+  void removeWhere(bool Function(Node element) test) {
     final allChildren = childrenAsList.toSet();
     super.removeWhere(test);
     _notifyListeners();
@@ -159,7 +158,7 @@ class ListenableNode<T> extends Node<T>
     allChildren.removeAll(remainingChildren);
 
     if (allChildren.isNotEmpty) {
-      _notifyNodesRemoved(NodeRemoveEvent(List<T>.from(allChildren)));
+      _notifyNodesRemoved(NodeRemoveEvent(List.from(allChildren)));
     }
   }
 
@@ -173,7 +172,7 @@ class ListenableNode<T> extends Node<T>
     final clearedNodes = childrenAsList;
     super.clear();
     _notifyListeners();
-    _notifyNodesRemoved(NodeRemoveEvent(List<T>.from(clearedNodes)));
+    _notifyNodesRemoved(NodeRemoveEvent(List.from(clearedNodes)));
   }
 
   /// * Utility method to get a child node at the [path].
@@ -209,12 +208,12 @@ class ListenableNode<T> extends Node<T>
   ///
   /// Note: The root node [rootKey] does not need to be in the path
   @override
-  ListenableNode<T> elementAt(String path) =>
-      super.elementAt(path) as ListenableNode<T>;
+  ListenableNode elementAt(String path) =>
+      super.elementAt(path) as ListenableNode;
 
   /// Overloaded operator for [elementAt]
   @override
-  ListenableNode<T> operator [](String path) => elementAt(path);
+  ListenableNode operator [](String path) => elementAt(path);
 
   /// Disposer to clear the listeners and [StreamSubscription]s
   @override
@@ -229,7 +228,7 @@ class ListenableNode<T> extends Node<T>
     if (!isRoot) parent!._notifyListeners();
   }
 
-  void _notifyNodesAdded(NodeAddEvent<T> event) {
+  void _notifyNodesAdded(NodeAddEvent event) {
     if (isRoot) {
       _addedNodes.emit(event);
     } else {
@@ -237,7 +236,7 @@ class ListenableNode<T> extends Node<T>
     }
   }
 
-  void _notifyNodesRemoved(NodeRemoveEvent<T> event) {
+  void _notifyNodesRemoved(NodeRemoveEvent event) {
     if (isRoot) {
       _removedNodes.emit(event);
     } else {
