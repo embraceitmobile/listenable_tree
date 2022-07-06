@@ -35,7 +35,7 @@ class ListenableNode<T> extends Node<T>
 
   /// Getter to get the [value] of the [ValueListenable]. It returns the [root]
   @override
-  T get value => root as T;
+  T get value => this as T;
 
   /// Getter to get the [root] node.
   /// If the current node is not a [root], then the getter will traverse up the

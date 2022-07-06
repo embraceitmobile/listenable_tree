@@ -34,7 +34,7 @@ class ListenableIndexedNode<T> extends IndexedNode<T>
 
   /// Getter to get the [value] of the [ValueListenable]. It returns the [root]
   @override
-  T get value => root as T;
+  T get value => this as T;
 
   /// This returns the [children] as an iterable list.
   @override
