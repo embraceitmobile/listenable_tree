@@ -9,6 +9,9 @@ import 'base/i_listenable_node.dart';
 class ListenableIndexedNode<T> extends IndexedNode<T>
     with ChangeNotifier
     implements IListenableNode<T> {
+  /// Turn this to [False] if the events should not bubble up the tree
+  static bool bubbleUpEvents = true;
+
   /// A listenable implementation the [Node].
   /// The mutations to the [Node] can be listened to using the [ValueListenable]
   /// interface or the [addedNodes] and [removedNodes] streams.
@@ -25,15 +28,12 @@ class ListenableIndexedNode<T> extends IndexedNode<T>
     T? data,
     IndexedNode<T>? parent,
     List<ListenableIndexedNode<T>>? children,
-    this.bubbleUpEvents = true,
   }) : super(key: key, data: data, parent: parent, children: children);
 
   /// Alternate factory constructor for [ListenableIndexedNode] that should be used for
   /// the [root] nodes.
   factory ListenableIndexedNode.root() =>
       ListenableIndexedNode(key: INode.rootKey);
-
-  final bool bubbleUpEvents;
 
   /// This is the parent [ListenableNode]. Only the root node has a null [parent]
   @override

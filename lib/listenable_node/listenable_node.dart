@@ -11,6 +11,9 @@ import 'base/i_listenable_node.dart';
 class ListenableNode<T> extends Node<T>
     with ChangeNotifier
     implements IListenableNode<T> {
+  /// Turn this to [False] if the events should not bubble up the tree
+  static bool bubbleUpEvents = true;
+
   /// A listenable implementation the [Node].
   /// The mutations to the [Node] can be listened to using the [ValueListenable]
   /// interface or the [addedNodes] and [removedNodes] streams.
@@ -27,14 +30,11 @@ class ListenableNode<T> extends Node<T>
     T? data,
     Node<T>? parent,
     Map<String, ListenableNode<T>>? children,
-    this.bubbleUpEvents = true,
   }) : super(key: key, data: data, parent: parent, children: children);
 
   /// Alternate factory constructor for [ListenableNode] that should be used for
   /// the [root] nodes.
   factory ListenableNode.root() => ListenableNode(key: INode.rootKey);
-
-  final bool bubbleUpEvents;
 
   /// This is the parent [ListenableNode]. Only the root node has a null [parent]
   @override
